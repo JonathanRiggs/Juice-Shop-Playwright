@@ -1,0 +1,49 @@
+# JUICE SHOP + Test Runner
+#
+# Local Dev to run from host
+#   docker compose up -d juice-shop
+#   npx playwright test ----- BASE_URL
+#
+# Fully containerized run for CI
+#   docker compose --profile test run --rm playwright
+
+name: juice-shop-playwright
+
+services:
+  juice-shop:
+    image: bkimminich/juice-shop:${JUICE_SHOP_VERSION:-latest}
+    container_name: juice-shop
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: ${JUICE_SHOP_ENV:-default}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/nodejs/bin/node",
+          "-e",
+          "fetch('http://localhost:3000/rest/admin/application-version').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+
+    restart: unless-stopped
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION:-1.50.0}-noble
+    profiles: ["test"]
+    working_dir: /work
+    ipc: host
+    environment:
+      BASE_URL: http://juice-shop:3000
+      CI: ${CI:-}
+    volumes:
+      - .:/work
+      - /work/node_modules
+    command: sh -c "npm ci && npc playwright test"
+    depends_on:
+      juice-shop:
+        condition: service_healthy
