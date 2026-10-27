@@ -43,7 +43,7 @@ services:
     volumes:
       - .:/work
       - /work/node_modules
-    command: sh -c "npm ci && npc playwright test"
+    command: sh -c "npm ci && npx playwright test"
     depends_on:
       juice-shop:
         condition: service_healthy
