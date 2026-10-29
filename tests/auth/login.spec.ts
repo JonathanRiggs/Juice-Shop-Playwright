@@ -24,7 +24,7 @@ test.describe('Login', () => {
     test('shows an error for an unregistered email', async ({ page, loginPage }) => {
         await loginPage.login(faker.internet.email(), 'Passw0rd!')
 
-        await expect(page.getByText('Invalid email or password.')).toBeVisible()
+        expect(page.getByText('Invalid email or password.').isVisible())
         await expect(page).toHaveURL(/#\/login/)
     })
 
