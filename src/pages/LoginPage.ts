@@ -7,33 +7,27 @@ export class LoginPage {
     private readonly page: Page;
     private readonly emailInput: Locator;
     private readonly passwordInput: Locator;
-    private readonly loginButton: Locator;
-    private readonly showPassword: Locator;
-    private readonly rememberMeCheckBox: Locator;
+    readonly loginButton: Locator;
 
     // Initialize locators using Playwright's user-facing Locators
 
     constructor(page: Page) {
         this.page = page;
 
-        this.emailInput = page.getByRole('textbox', { name: 'Text field for email input' });
-        this.passwordInput = page.getByRole('textbox', { name: 'Text field for password input' });
-        this.loginButton = page.getByRole('button', { name: 'Log in', exact: true });
-        this.showPassword = page.getByRole('button', { name: 'Show Password' });
-        this.rememberMeCheckBox = page.getByRole('checkbox', { name: 'Checkbox to stay logged in' });
+        this.emailInput = page.getByRole('textbox', { name: 'Text field for the login email' });
+        this.passwordInput = page.getByRole('textbox', { name: 'Text field for the login password' });
+        this.loginButton = page.getByRole('button', { name: 'Login', exact: true });
     }
 
     // Navigate directly to the Login page route
     async goto(): Promise<void> {
-        await this.page.goto('http://localhost:3000/#/login');
+        await this.page.goto('/#/login');
     }
 
     // Structural action sequence required to login
     async login(email: string, password: string): Promise<void> {
         await this.emailInput.fill(email)
         await this.passwordInput.fill(password)
-        await this.showPassword.click()
-        await this.rememberMeCheckBox.click()
         await this.loginButton.click()
     }
 
